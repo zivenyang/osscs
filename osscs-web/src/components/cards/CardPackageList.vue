@@ -6,8 +6,8 @@
     :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
   >
     <template #title>
-      <h6 :key="this.query">
-        在 “{{ this.ossType }}” 中关于 “{{ this.query }}” 的搜索结果
+      <h6 :key="this.q">
+        在 “{{ this.ossType }}” 中关于 “{{ this.q }}” 的搜索结果
       </h6>
     </template>
 
@@ -23,13 +23,19 @@
           <router-link :to="{ name: 'Detail', params: { id: index } }">
             <a-card hoverable :bordered="false" class="card-package-list">
               <div class="col-info">
-                <a-descriptions :title="item.title" :column="1">
-                  <a-descriptions-item label="description">
-                    {{ item.description }}
+                <a-descriptions :title="item.package_name" :column="1">
+                  <a-descriptions-item>
+                    {{ item.package_description }}
                   </a-descriptions-item>
-                  <a-descriptions-item label="avatar">
+                  <a-descriptions-item label="version">
+                    {{ item.package_version }}
+                  </a-descriptions-item>
+                   <a-descriptions-item label="released">
+                    {{ item.package_released }}
+                  </a-descriptions-item>
+                  <!-- <a-descriptions-item label="avatar">
                     {{ item.avatar }}
-                  </a-descriptions-item>
+                  </a-descriptions-item> -->
                 </a-descriptions>
               </div>
               <div class="col-action">
@@ -80,104 +86,30 @@
     </a-list>
     <!-- / Billing Information Card -->
   </a-card>
-
-  <!-- <div class="content">
-    <a-layout-content class="result_content">
-      <h2 :key="this.query">
-        在 “{{ this.ossType }}” 中关于 “{{ this.query }}” 的搜索结果
-      </h2>
-      <div class="result_list">
-        <a-list
-          item-layout="vertical"
-          size="large"
-          :pagination="paginations"
-          :data-source="resultList"
-          style="padding-bottom: 10px"
-        >
-          <template #renderItem="{ item }">
-            <a-list-item key="item.title">
-              <a-list-item-meta :description="item.description">
-                <template #avatar>
-                  <a-avatar
-                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                  />
-                </template>
-                <template #title>
-                  <a :href="item.href">{{ item.title }}</a>
-                </template>
-              </a-list-item-meta>
-            </a-list-item>
-          </template>
-        </a-list>
-      </div>
-    </a-layout-content>
-  </div> -->
 </template>
 
 <script>
-const dataList = [];
-const pagination = {
-  onChange: (page) => {
-    console.log(page);
-  },
-  pageSize: 5,
-};
+// const dataList = [];
+// const pagination = {
+//   onChange: (page) => {
+//     console.log(page);
+//   },
+//   pageSize: 5,
+// };
 
-for (let i = 0; i < 23; i++) {
-  dataList.push({
-    href: "/",
-    title: `ant design vue part ${i}`,
-    avatar: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-    description:
-      "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-  });
-}
+// for (let i = 0; i < 23; i++) {
+//   dataList.push({
+//     href: "/",
+//     title: `ant design vue part ${i}`,
+//     avatar: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
+//     description:
+//       "Ant Design, a design language for background applications, is refined by Ant UED Team.",
+//   });
+// }
 
 export default {
-  components: {},
-  data() {
-    return {
-      ossType: "",
-      query: "",
-      packageList: dataList,
-      paginations: pagination,
-    };
-  },
-
-  methods: {
-    // 页面数据初始化，从GET请求中获取参数
-    loadData() {
-      this.ossType = this.$route.query.ossType;
-      this.query = this.$route.query.query;
-    },
-  },
-  mounted() {
-    this.loadData();
-  },
-  // 解决当前页面数据不刷新问题
-  watch: {
-    $route() {
-      this.loadData();
-    },
-  },
+  props: ["packageList", "ossType", "q", "paginations", "nextPage"],
 };
 </script>
 <style lang="less">
-// .content {
-//   min-height: calc(100vh - 134px);
-//   .result_content {
-//     background: #fafafa;
-//     align-items: center;
-//     display: flex;
-//     flex-direction: column;
-//     min-height: calc(100vh - 134px);
-//     min-width: fit-content;
-//     position: relative;
-//     z-index: 1;
-//     .result_list {
-//       text-align: left;
-//       width: 50%;
-//     }
-//   }
-// }
 </style>

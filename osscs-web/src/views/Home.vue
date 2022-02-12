@@ -16,7 +16,7 @@
         </h5>
         <!-- Search Bar -->
         <a-input-search
-          v-model:value="this.query"
+          v-model:value="this.q"
           placeholder="请输入开源软件名称"
           enter-button
           @search="onSearch"
@@ -25,8 +25,8 @@
         >
           <template #addonBefore>
             <a-select v-model:value="this.ossType" style="width: 90px;" class="oss_type_selector">
-              <a-select-option value="Maven">Maven</a-select-option>
-              <a-select-option value="PyPI">PyPI</a-select-option>
+              <a-select-option value="maven">Maven</a-select-option>
+              <a-select-option value="pypi">PyPI</a-select-option>
             </a-select>
           </template>
         </a-input-search>
@@ -55,18 +55,18 @@ export default {
     data() {
     return {
       ossType: "Maven",
-      query: "",
+      q: "",
     };
   },
   methods: {
     onSearch() {
-      if (!this.query) {
+      if (!this.q) {
         return;
       }
 
       this.$router.push({
-        name: "Result",
-        query: { ossType: this.ossType, query: this.query },
+        name: "Search",
+        query: { ossType: this.ossType, q: this.q },
       });
     },
   },

@@ -12,9 +12,9 @@ const routes = [
     },
   },
   {
-    path: '/result',
-    name: 'Result',
-    component: () => import('../views/Result.vue'),
+    path: '/search',
+    name: 'Search',
+    component: () => import('../views/Search.vue'),
   },
   {
     path: '/package/detail/:id',
