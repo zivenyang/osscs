@@ -6,11 +6,12 @@
         <!-- Package List Card -->
 
         <CardPackageList
-          :platform="platform"
+          :platforms="platforms"
           :q="q"
           :packageList="packageList"
-          :nextPage="nextPage"
-          :paginations="paginations"
+          :meta="meta"
+          :getPackageList="getPackageList"
+          :loading="loading"
         ></CardPackageList>
         <!-- / Package List Card -->
       </a-col>
@@ -23,12 +24,12 @@ import CardPackageList from "@/components/cards/CardPackageList.vue";
 import { ajax } from "@/utils/ajax";
 import { PackageApis } from "@/utils/apis";
 
-const pagination = {
-  onChange: (page) => {
-    console.log(page);
-  },
-  pageSize: 10,
-};
+// const pagination = {
+//   onChange: (page) => {
+//     console.log(page);
+//   },
+//   pageSize: 10,
+// };
 
 export default {
   components: {
@@ -36,43 +37,58 @@ export default {
   },
   data() {
     return {
-      platform: "",
+      platforms: "",
       q: "",
       packageList: [],
-      nextPage: "",
-      paginations: pagination,
+      meta: {},
+      page: 1,
+      perPage: 20,
+      loading: true,
+      // paginations: pagination,
     };
   },
 
   methods: {
     // 页面数据初始化，从GET请求中获取参数
     loadData() {
-      this.platform = this.$route.query.platform;
+      this.platforms = this.$route.query.platforms;
       this.q = this.$route.query.q;
+      this.packageList = [];
+      this.meta = {};
+      this.page = 1;
+      this.loading = true;
       this.getPackageList();
+      this.loading = false;
     },
+    // onRefresh () {
+    //   // 清空数据
+    //   this.packageList = []
+    //   this.page = 1
+    //   // 重新加载数据
+    //   this.getPackageList()
+    // },
     getPackageList() {
       ajax
         .get(PackageApis.packageListUrl, {
           params: {
-            platform: this.platform,
+            platforms: this.platforms,
             q: this.q,
+            page: this.page,
+            perPage: this.perPage,
           },
         })
-        .then(({ data: { package_list, next_page } }) => {
-          this.packageList = package_list;
-          this.nextPage = next_page;
+        .then(({ data: { package_list, meta } }) => {
+          this.packageList = this.packageList.concat(package_list);
+          this.meta = meta;
+          this.page += 1;
         });
     },
   },
   mounted() {
     this.loadData();
   },
-  // 解决当前页面数据不刷新问题
-  watch: {
-    $route() {
-      this.loadData();
-    },
+  updated() {
+    this.loadData();
   },
 };
 </script>

@@ -24,9 +24,9 @@
           style="margin: 50px auto;"
         >
           <template #addonBefore>
-            <a-select v-model:value="this.ossType" style="width: 90px;" class="oss_type_selector">
-              <a-select-option value="maven">Maven</a-select-option>
+            <a-select v-model:value="this.platforms" style="width: 90px;" class="oss_type_selector">
               <a-select-option value="pypi">PyPI</a-select-option>
+              <a-select-option value="maven">Maven</a-select-option>
             </a-select>
           </template>
         </a-input-search>
@@ -48,13 +48,13 @@
 // @ is an alias to /src
 
 export default {
-  name: "Home",
+  // name: "Home",
   components: {
 
   },
     data() {
     return {
-      ossType: "Maven",
+      platforms: "pypi",
       q: "",
     };
   },
@@ -66,7 +66,7 @@ export default {
 
       this.$router.push({
         name: "Search",
-        query: { ossType: this.ossType, q: this.q },
+        query: { platforms: this.platforms, q: this.q },
       });
     },
   },

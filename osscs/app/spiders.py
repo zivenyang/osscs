@@ -1,110 +1,97 @@
-from datetime import datetime
 from urllib import parse
 
 import requests
-from bs4 import BeautifulSoup
 
-from app.serializers import PypiPackageSerializer, BasePackageListSerializer
-from const.const import MVN_REPOSITORY_PACKAGE_SEARCH_URL, MAVEN, PYPI, \
-    PYPI_REPOSITORY_PACKAGE_SEARCH_URL, PYPI_REPOSITORY_URL
-
-
-class Spider:
-    def __init__(self, oss_type, q=None, url=None):
-        self.oss_type = oss_type
-        self.q = q
-        self.url = url
+from app.serializers import PackageListSerializer, MetaSerializer, PackageSerializer, PackageDetailSerializer
+from const.const import LIBRARIES_IO_PROJECT_SEARCH_API_URL, LIBRARIES_IO_API_URL
+from const.security import LIBRARIES_IO_API_KEY
 
 
-class PackageSpider(Spider):
-    def __init__(self, oss_type, q=None, url=None):
-        super().__init__(oss_type, q, url)
-        self.url = url if url else self.get_url()
-        self.response = self.request_page()
+class LibrariesAPI(object):
+    """
+    使用https://libraries.io/api提供的接口获取包数据
+    """
 
-    def get_url(self):
-        if self.oss_type == MAVEN:
-            url = MVN_REPOSITORY_PACKAGE_SEARCH_URL
-        elif self.oss_type == PYPI:
-            url = PYPI_REPOSITORY_PACKAGE_SEARCH_URL
-        else:
-            raise ValueError("oss_type not true!")
-        return url
+    def __init__(self, api_key=None, page=1, per_page=20):
+        self.api_key = api_key if api_key else LIBRARIES_IO_API_KEY
+        self.page = page
+        self.per_page = per_page
 
-    def request_page(self):
-        if self.oss_type == MAVEN:
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36',
-                'Cookie': '__cfduid=db73a1a3b63a54e86f435f615f5ec37791562300679; _ga=GA1.2.1048718546.1562300686; _gid=GA1.2.312498482.1562300686',
-                'Accept': '*/*', 'Accept-Encoding': 'gzip',
-                'Accept-Language': 'en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7,mt;q=0.6'
-            }
 
-            if self.q:
-                params = {
-                    "q": self.q
-                }
-                resp = requests.get(self.url, params=params, headers=headers, verify=False)
-            else:
-                resp = requests.get(self.url, headers=headers, verify=False)
-        elif self.oss_type == PYPI:
-            if self.q:
-                params = {
-                    "q": self.q
-                }
-                resp = requests.get(self.url, params=params, verify=False)
-            else:
-                resp = requests.get(self.url, verify=False)
-        else:
-            raise
-        return resp.text
+class LibrariesProjectSearchAPI(LibrariesAPI):
+    """
+    Project Search API
+    用于搜索相关软件包
+    """
+
+    def __init__(self, q, platforms, languages=None, licenses=None, keywords=None, sort=None, page=1, per_page=20):
+        super().__init__(page=page, per_page=per_page)
+        # self.page = page if page else self.page
+        # self.per_page = per_page if per_page else self.per_page
+        self.api = LIBRARIES_IO_PROJECT_SEARCH_API_URL
+        self.params = {
+            "api_key": self.api_key,
+            "q": q,
+            "platforms": platforms,
+            "languages": languages,
+            "licenses": licenses,
+            "keywords": keywords,
+            "sort": sort,
+            "page": self.page,
+            "per_page": self.per_page
+        }
+
+    def get_response(self):
+        try:
+            resp = requests.get(self.api, params=self.params, verify=False)
+            return resp.json()
+        except requests.exceptions.RequestException as e:
+            raise e
 
     def parse_response(self):
-        package_list_obj = BasePackageListSerializer()
+        resp_json = self.get_response()
+        data = PackageListSerializer()
+        meta = MetaSerializer()
 
-        if self.oss_type == PYPI:
-            return pypi_response_parser(self.response, package_list_obj)
-        else:
-            raise
+        # 结果列表为空时下一页标记为False，返回结果为空
+        if len(resp_json) == 0:
+            meta.is_no_result = True
+
+        # 结果列表长度等于分页长度时，说明有下一页
+        if len(resp_json) == self.per_page:
+            meta.has_next_page = True
+        meta.page = self.page
+        meta.per_page = self.per_page
+        data.meta = meta.to_dict()
+
+        for item in resp_json:
+            data.package_list.append(PackageSerializer(item).to_dict())
+
+        return data.to_dict()
 
 
-def pypi_response_parser(resp, package_list_obj: BasePackageListSerializer()):
-    package_obj = PypiPackageSerializer()
-    soup = BeautifulSoup(resp, 'lxml')
+class LibrariesProjectAPI(LibrariesAPI):
+    def __init__(self, platform, name, page=1, per_page=20):
+        super().__init__(page=page, per_page=per_page)
+        self.platform = platform
+        self.name = name
+        self.api = parse.urljoin(LIBRARIES_IO_API_URL, platform+'/'+name)
+        self.params = {
+            "api_key": self.api_key
+        }
 
-    # 获取搜索结果中的li标签列表
-    search_results_list = soup.select('ul[aria-label="Search results"] li a')
-    for item in search_results_list:
-        # 遍历每个li标签中子元素，获得需要的包信息
-        """
-        <a class="package-snippet" href="/project/django/">
-        <h3 class="package-snippet__title">
-        <span class="package-snippet__name">Django</span>
-        <span class="package-snippet__version">4.0.2</span>
-        <span class="package-snippet__released"><time data-controller="localized-time" data-localized-time-relative="true" data-localized-time-show-time="false" datetime="2022-02-01T07:56:23+0000">
-          Feb 1, 2022
-        </time></span>
-        </h3>
-        <p class="package-snippet__description">A high-level Python web framework that encourages rapid development and clean, pragmatic design.</p>
-        </a>
-        """
-        package_obj.package_url = parse.urljoin(PYPI_REPOSITORY_URL, item.attrs["href"])
-        package_obj.package_name = item.select('h3 .package-snippet__name')[0].get_text()
-        package_obj.package_description = item.select('p.package-snippet__description')[0].get_text()
-        package_obj.package_version = item.select('h3 .package-snippet__version')[0].get_text()
-        package_obj.package_released = datetime.strptime(
-            item.select('h3 .package-snippet__released time')[0].attrs["datetime"], "%Y-%m-%dT%H:%M:%S+%f")
-        package_list_obj.package_list.append(package_obj.to_dict())
+    def get_response(self):
+        try:
+            resp = requests.get(self.api, params=self.params, verify=False)
+            return resp.json()
+        except requests.exceptions.RequestException as e:
+            raise e
 
-    # 获取下一页的url
-    next_page_tag = soup.select('.button-group--pagination a:last-child')
-    if len(next_page_tag) != 0 and next_page_tag[0].get_text() == "Next" and "button--disabled" not in \
-            next_page_tag[0].attrs["class"]:
-        next_page_url = next_page_tag[0].get("href")
-        package_list_obj.next_page = parse.urljoin(PYPI_REPOSITORY_URL, next_page_url)
-    return package_list_obj.to_dict()
+    def parse_response(self):
+        resp_json = self.get_response()
+        return PackageDetailSerializer(resp_json).to_dict()
 
 
 if __name__ == '__main__':
-    spider = PackageSpider("pypi", url="https://pypi.org/search/?o=&q=django&page=500")
+    spider = LibrariesProjectAPI(platform="npm", name="base62")
     print(spider.parse_response())

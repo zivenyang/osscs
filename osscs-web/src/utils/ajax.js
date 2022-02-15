@@ -1,4 +1,5 @@
 import axios from "axios";
+import NProgress from 'nprogress'
 
 export const ajax = axios.create({
     headers: {
@@ -8,6 +9,7 @@ export const ajax = axios.create({
 })
 
 ajax.interceptors.request.use(function (config) {
+    NProgress.start()
     //在发送请求之前做什么
     console.log('请求拦截到了')
     //   window.app.$toast.loading({
@@ -24,6 +26,7 @@ ajax.interceptors.request.use(function (config) {
 })
 
 ajax.interceptors.response.use(function (response) {
+    NProgress.done() // 加载进度条结束
     //对响应做些什么
     console.log('响应拦截到了')
     //   window.app.$toast.clear()

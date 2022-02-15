@@ -17,9 +17,9 @@
           size="small"
         >
           <template #addonBefore>
-            <a-select v-model:value="this.ossType" style="width: 90px">
-              <a-select-option value="maven">Maven</a-select-option>
+            <a-select v-model:value="this.platforms" style="width: 90px">
               <a-select-option value="pypi">PyPI</a-select-option>
+              <a-select-option value="maven">Maven</a-select-option>
             </a-select>
           </template>
         </a-input-search>
@@ -68,7 +68,7 @@ export default {
       // Fixed header/sidebar-footer ( Affix component ) top offset.
       top: 0,
       q: "",
-      ossType: "Maven",
+      platforms: "pypi",
     };
   },
   methods: {
@@ -84,7 +84,7 @@ export default {
       }
       this.$router.push({
         name: "Search",
-        query: { ossType: this.ossType, q: this.q },
+        query: { platforms: this.platforms, q: this.q },
       });
     },
   },

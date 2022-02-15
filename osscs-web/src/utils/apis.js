@@ -7,9 +7,9 @@ const apiHost = 'http://localhost:8080/api'
 // 包模块接口
 const PackageApis = {
     // 包查询接口
-    packageListUrl: apiHost + '/search/',
+    packageListUrl: `${apiHost}/search/`,
     // 包详情接口
-    packageDetailUrl: apiHost + '/sight/sight/detail/#{id}/',
+    packageDetailUrl: `${apiHost}/:platform/:name/`,
 }
 
 export {
