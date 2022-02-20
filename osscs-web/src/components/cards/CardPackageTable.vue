@@ -5,6 +5,7 @@
       :bordered="false"
       class="header-solid h-full card-package-table"
       :bodyStyle="{ padding: 0 }"
+      :loading="loading"
     >
       <template #title>
         <a-row type="flex" align="middle">
@@ -14,31 +15,23 @@
         </a-row>
       </template>
       <a-table :columns="columns" :data-source="data" :pagination="true">
-        <template #version="{ text: version }">
-          <div class="package-version-info">
-            <a :href="version.href"
-              ><h6>{{ version.value }}</h6></a
-            >
-          </div>
-        </template>
-
         <template #vulnerabilities="{ text: vulnerabilities }">
-          <div class="package-vulnerabilities-info" >
-            <a-tag color="error" v-if="vulnerabilities.value">
-              <a :href="vulnerabilities.href">{{ vulnerabilities.value }}</a>
+          <div class="package-vulnerabilities-info">
+            <a-tag color="error" v-if="vulnerabilities">
+              {{ vulnerabilities }}
             </a-tag>
           </div>
         </template>
 
         <template #usages="{ text: usages }">
-          <a :href="usages.href">{{ usages.value }}</a>
+          {{ usages }}
           <a-progress
             :stroke-color="{
               from: '#6CA8AF',
               to: '#C3D94E',
             }"
-            :percent="usages.value"
-			:show-info="false"
+            :percent="usages"
+            :show-info="false"
             status="active"
           />
         </template>
@@ -58,6 +51,10 @@ export default {
     columns: {
       type: Array,
       default: () => [],
+    },
+    loading: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

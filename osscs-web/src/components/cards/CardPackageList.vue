@@ -4,6 +4,7 @@
     :bordered="false"
     class="header-solid h-full"
     :bodyStyle="{ paddingTop: 0, paddingBottom: '16px' }"
+    :loading="loading"
   >
     <template #title>
       <h6 :key="this.q">

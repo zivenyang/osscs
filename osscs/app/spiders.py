@@ -2,6 +2,7 @@ from urllib import parse
 
 import requests
 
+from app.models import MetaObject, PackageListObject, PackageObject, PackageDetailObject
 from app.serializers import PackageListSerializer, MetaSerializer, PackageSerializer, PackageDetailSerializer
 from const.const import LIBRARIES_IO_PROJECT_SEARCH_API_URL, LIBRARIES_IO_API_URL
 from const.security import LIBRARIES_IO_API_KEY
@@ -16,6 +17,12 @@ class LibrariesAPI(object):
         self.api_key = api_key if api_key else LIBRARIES_IO_API_KEY
         self.page = page
         self.per_page = per_page
+
+    def get_response(self):
+        raise NotImplementedError
+
+    def get_query_object(self):
+        raise NotImplementedError
 
 
 class LibrariesProjectSearchAPI(LibrariesAPI):
@@ -48,10 +55,10 @@ class LibrariesProjectSearchAPI(LibrariesAPI):
         except requests.exceptions.RequestException as e:
             raise e
 
-    def parse_response(self):
+    def get_query_object(self):
         resp_json = self.get_response()
-        data = PackageListSerializer()
-        meta = MetaSerializer()
+        meta = MetaObject()
+        query_object = PackageListObject()
 
         # 结果列表为空时下一页标记为False，返回结果为空
         if len(resp_json) == 0:
@@ -62,12 +69,12 @@ class LibrariesProjectSearchAPI(LibrariesAPI):
             meta.has_next_page = True
         meta.page = self.page
         meta.per_page = self.per_page
-        data.meta = meta.to_dict()
+        query_object.meta = meta
 
         for item in resp_json:
-            data.package_list.append(PackageSerializer(item).to_dict())
+            query_object.package_list.append(PackageObject(item))
 
-        return data.to_dict()
+        return query_object
 
 
 class LibrariesProjectAPI(LibrariesAPI):
@@ -87,11 +94,12 @@ class LibrariesProjectAPI(LibrariesAPI):
         except requests.exceptions.RequestException as e:
             raise e
 
-    def parse_response(self):
+    def get_query_object(self):
         resp_json = self.get_response()
-        return PackageDetailSerializer(resp_json).to_dict()
+        PackageDetailObject(resp_json)
+        return PackageDetailObject(resp_json)
 
 
 if __name__ == '__main__':
-    spider = LibrariesProjectAPI(platform="npm", name="base62")
-    print(spider.parse_response())
+    spider = LibrariesProjectSearchAPI(q="django", platforms="pypi")
+    print(spider.get_query_object())

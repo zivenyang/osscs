@@ -1,136 +1,108 @@
-class PackageListSerializer(object):
-    def __init__(self):
-        self.package_list = []
-        self.meta = {}
-
-    def to_dict(self):
-        return {
-            "package_list": self.package_list,
-            "meta": self.meta
-        }
+from rest_framework import serializers
 
 
-class MetaSerializer(object):
-    def __init__(self):
-        self.page = 1
-        self.per_page = 20
-        self.has_next_page = False
-        self.is_no_result = False
+class MetaSerializer(serializers.Serializer):
+    page = serializers.IntegerField(default=1)
+    per_page = serializers.IntegerField(default=20)
+    has_next_page = serializers.BooleanField(default=False)
+    is_no_result = serializers.BooleanField(default=False)
 
-    def to_dict(self):
-        return {
-            "page": self.page,
-            "per_page": self.per_page,
-            "has_next_page": self.has_next_page,
-            "is_no_result": self.is_no_result
-        }
+    def create(self, validated_data):
+        return validated_data
+
+    def update(self, instance, validated_data):
+        return instance
 
 
-class PackageSerializer(object):
+class PackageSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True)
+    description = serializers.CharField(required=True, allow_blank=True, allow_null=True)
+    keywords = serializers.ListField(allow_empty=True, allow_null=True)
+    latest_release_number = serializers.CharField(required=True)
+    latest_stable_release_number = serializers.CharField(required=True)
+    latest_stable_release_published_at = serializers.DateTimeField(input_formats="%Y-%m-%dT%H:%M:%F.%fZ")
+    licenses = serializers.CharField(allow_null=True, allow_blank=True)
+    stars = serializers.IntegerField()
+    status = serializers.CharField(allow_null=True)
+    dependent_repos_count = serializers.IntegerField()
 
-    def __init__(self, obj):
-        self.name = obj["name"]
-        self.description = obj["description"]
-        self.keywords = obj["keywords"]
-        self.latest_release_number = obj["latest_release_number"]
-        self.latest_stable_release_number = obj["latest_stable_release_number"]
-        self.latest_stable_release_published_at = obj["latest_stable_release_published_at"]
-        self.licenses = obj["licenses"].split(" ")[0].strip() if obj["licenses"] else "UNKNOWN"
-        self.stars = obj["stars"]
-        self.status = obj["status"]
-        self.dependent_repos_count = obj["dependent_repos_count"]
+    # def get_licenses(self, obj):
+    #     if obj.licenses:
+    #         return obj.licenses.split(" ")[0].strip()
+    #     else:
+    #         return "UNKNOWN"
 
-    def to_dict(self):
-        return {
-            "name": self.name,
-            "description": self.description,
-            "keywords": self.keywords,
-            "latest_release_number": self.latest_release_number,
-            "latest_stable_release_number": self.latest_stable_release_number,
-            "latest_stable_release_published_at": self.latest_stable_release_published_at,
-            "licenses": self.licenses,
-            "stars": self.stars,
-            "status": self.status,
-            "dependent_repos_count": self.dependent_repos_count,
-        }
+    def create(self, validated_data):
+        return validated_data
+
+    def update(self, instance, validated_data):
+        return instance
 
 
-class PackageDetailSerializer(object):
+class PackageListSerializer(serializers.Serializer):
+    package_list = PackageSerializer(required=False, many=True, allow_null=True)
+    meta = MetaSerializer(required=True)
 
-    def __init__(self, obj):
-        self.dependent_repos_count = obj["dependent_repos_count"]
-        self.dependents_count = obj["dependents_count"]
-        self.deprecation_reason = obj["deprecation_reason"]
-        self.description = obj["description"]
-        self.forks = obj["forks"]
-        self.homepage = obj["homepage"]
-        self.keywords = obj["keywords"]
-        self.language = obj["language"]
-        self.latest_download_url = obj["latest_download_url"]
-        self.latest_release_number = obj["latest_release_number"]
-        self.latest_release_published_at = obj["latest_release_published_at"]
-        self.latest_stable_release_number = obj["latest_stable_release_number"]
-        self.latest_stable_release_published_at = obj["latest_stable_release_published_at"]
-        self.license_normalized = obj["license_normalized"]
-        self.licenses = obj["licenses"].split(" ")[0].strip() if obj["licenses"] else "UNKNOWN"
-        self.name = obj["name"]
-        self.normalized_licenses = obj["normalized_licenses"]
-        self.package_manager_url = obj["package_manager_url"]
-        self.platform = obj["platform"]
-        self.rank = obj["rank"]
-        self.repository_license = obj["repository_license"]
-        self.repository_url = obj["repository_url"]
-        self.stars = obj["stars"]
-        self.status = obj["status"]
-        self.versions = [PackageVersionSerializer(i).to_dict() for i in obj["versions"]]
+    def update(self, instance, validated_data):
+        return instance
 
-    def to_dict(self):
-        return {
-            "dependent_repos_count": self.dependent_repos_count,
-            "dependents_count": self.dependents_count,
-            "deprecation_reason": self.deprecation_reason,
-            "description": self.description,
-            "forks": self.forks,
-            "homepage": self.homepage,
-            "keywords": self.keywords,
-            "language": self.language,
-            "latest_download_url": self.latest_download_url,
-            "latest_release_number": self.latest_release_number,
-            "latest_release_published_at": self.latest_release_published_at,
-            "latest_stable_release_number": self.latest_stable_release_number,
-            "latest_stable_release_published_at": self.latest_stable_release_published_at,
-            "license_normalized": self.license_normalized,
-            "licenses": self.licenses,
-            "name": self.name,
-            "normalized_licenses": self.normalized_licenses,
-            "package_manager_url": self.package_manager_url,
-            "platform": self.platform,
-            "rank": self.rank,
-            "repository_license": self.repository_license,
-            "repository_url": self.repository_url,
-            "stars": self.stars,
-            "status": self.status,
-            "versions": self.versions,
-        }
+    def create(self, validated_data):
+        return validated_data
 
 
-class PackageVersionSerializer(object):
-    def __init__(self, obj):
-        self.number = obj["number"]
-        self.published_at = obj["published_at"]
-        self.spdx_expression = obj["spdx_expression"]
-        self.original_license = obj["original_license"]
-        self.researched_at = obj["researched_at"]
-        self.repository_sources = obj["repository_sources"]
+class PackageVersionSerializer(serializers.Serializer):
+    number = serializers.CharField(required=True)
+    published_at = serializers.DateTimeField(input_formats="%Y-%m-%dT%H:%M:%F.%fZ")
+    spdx_expression = serializers.CharField(allow_null=True)
+    original_license = serializers.CharField(allow_null=True)
+    researched_at = serializers.DateTimeField(input_formats="%Y-%m-%dT%H:%M:%F.%fZ", allow_null=True)
+    repository_sources = serializers.ListField(allow_null=True, allow_empty=True)
 
-    def to_dict(self):
-        return {
-            "number": self.number,
-            "published_at": self.published_at,
-            "spdx_expression": self.spdx_expression,
-            "original_license": self.original_license,
-            "researched_at": self.researched_at,
-            "repository_sources": self.repository_sources,
-            "vulnerabilities": "2 vulnerabilities",
-            "usages": 100,
-        }
+    def update(self, instance, validated_data):
+        return instance
+
+    def create(self, validated_data):
+        return validated_data
+
+
+class PackageDetailSerializer(serializers.Serializer):
+
+    dependent_repos_count = serializers.IntegerField()
+    dependents_count = serializers.IntegerField()
+    deprecation_reason = serializers.CharField(allow_null=True, allow_blank=True)
+    description = serializers.CharField(allow_null=True, allow_blank=True)
+    forks = serializers.IntegerField()
+    homepage = serializers.URLField(allow_blank=True, allow_null=True)
+    keywords = serializers.ListField(allow_null=True, allow_empty=True)
+    language = serializers.CharField()
+    latest_download_url = serializers.URLField(allow_null=True, allow_blank=True)
+    latest_release_number = serializers.CharField(allow_null=True)
+    latest_release_published_at = serializers.DateTimeField(input_formats="%Y-%m-%dT%H:%M:%F.%fZ", allow_null=True)
+    latest_stable_release_number = serializers.CharField(allow_null=True)
+    latest_stable_release_published_at = serializers.DateTimeField(input_formats="%Y-%m-%dT%H:%M:%F.%fZ", allow_null=True)
+    license_normalized = serializers.BooleanField()
+    licenses = serializers.CharField(allow_null=True, allow_blank=True)
+    name = serializers.CharField()
+    normalized_licenses = serializers.ListField(allow_null=True, allow_empty=True)
+    package_manager_url = serializers.URLField(allow_null=True, allow_blank=True)
+    platform = serializers.CharField()
+    rank = serializers.IntegerField()
+    repository_license = serializers.CharField()
+    repository_url = serializers.URLField(allow_blank=True, allow_null=True)
+    stars = serializers.IntegerField()
+    status = serializers.CharField(allow_null=True, allow_blank=True)
+    versions = PackageVersionSerializer(many=True, allow_null=False)
+
+    # def get_licenses(self, obj):
+    #     if obj.licenses:
+    #         return obj.licenses.split(" ")[0].strip()
+    #     else:
+    #         return "UNKNOWN"
+
+    def update(self, instance, validated_data):
+        return instance
+
+    def create(self, validated_data):
+        return validated_data
+
+

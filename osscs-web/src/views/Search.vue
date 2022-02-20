@@ -58,7 +58,6 @@ export default {
       this.page = 1;
       this.loading = true;
       this.getPackageList();
-      this.loading = false;
     },
     // onRefresh () {
     //   // 清空数据
@@ -81,6 +80,7 @@ export default {
           this.packageList = this.packageList.concat(package_list);
           this.meta = meta;
           this.page += 1;
+          this.loading = false;
         });
     },
   },

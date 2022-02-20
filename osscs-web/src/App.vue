@@ -28,4 +28,7 @@
 </script>
 
 <style lang="less">
+#nprogress .bar {
+      background: #6CA8AF !important; //自定义颜色
+    }
 </style>

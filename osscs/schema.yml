@@ -1,0 +1,81 @@
+openapi: 3.0.3
+info:
+  title: OSSCS
+  version: 0.0.1
+  description: 开源软件便利店（Open Source Software Convenience Stores），用于快速挑选安全新鲜的开源软件。
+paths:
+  /api/{platform}/{name}/:
+    get:
+      operationId: api_retrieve
+      parameters:
+      - in: path
+        name: name
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: platform
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/search/:
+    get:
+      operationId: api_search_retrieve
+      description: 包查询接口
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: 当前页码
+        required: true
+      - in: query
+        name: perPage
+        schema:
+          type: integer
+        description: 每页条数
+        required: true
+      - in: query
+        name: platforms
+        schema:
+          type: string
+        description: 包管理平台名称
+        required: true
+        examples:
+          Example1:
+            value: pypi
+            summary: pypi
+            description: python的包管理平台
+      - in: query
+        name: q
+        schema:
+          type: string
+        description: 搜索内容
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

@@ -1,0 +1,50 @@
+# 建立 python 3.9环境
+FROM python:3.9
+
+LABEL maintainer="yangziwen1994@gmail.com"
+LABEL org.opencontainers.image.title="OSSCS"
+LABEL org.opencontainers.image.description="开源软件便利店(Open Source Software Convenience Stores), 用于快速挑选安全新鲜的开源软件。"
+LABEL org.opencontainers.image.url="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.documentation="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.source="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.authors="yangziwen1994@gmail.com"
+
+# 设置 python 环境变量
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# 容器内创建 myproject 文件夹
+ENV APP_HOME=/usr/app/osscs
+RUN mkdir -p $APP_HOME
+WORKDIR $APP_HOME
+
+# 将当前目录加入到工作目录中（. 表示当前目录）
+ADD . $APP_HOME
+
+RUN groupadd -r osscs && useradd -r -m -g osscs osscs
+
+# 更新pip版本
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir pip -U
+
+# 安装项目依赖
+RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple --no-cache-dir
+
+# 移除\r in windows
+RUN sed -i 's/\r//' ./bin/start.sh
+
+# 给start.sh可执行权限
+RUN chmod +x ./bin/start.sh
+
+RUN mkdir -p /var/run/uwsgi \
+  && mkdir -p /var/log/uwsgi
+
+# 暴露容器端口
+EXPOSE 8000
+
+# 数据迁移，并使用uwsgi启动服务
+ENTRYPOINT /bin/bash ./bin/start.sh
+
+
+ARG SOURCE_COMMIT="main"
+LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
+LABEL org.opencontainers.image.licenses="https://github.com/zivenyang/osscs/blob/${SOURCE_COMMIT}/LICENSE"

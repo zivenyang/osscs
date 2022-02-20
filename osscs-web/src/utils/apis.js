@@ -2,7 +2,9 @@
  * 存放项目中所有的接口地址
  */
 
-const apiHost = 'http://localhost:8080/api'
+// const apiHost = 'http://localhost:8080/api'
+
+const apiHost = '/api'
 
 // 包模块接口
 const PackageApis = {

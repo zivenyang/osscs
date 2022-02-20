@@ -1,6 +1,6 @@
 {
-  "name": "osscs-web",
-  "version": "0.1.0",
+  "name": "osscs",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -13,6 +13,7 @@
     "axios": "^0.25.0",
     "core-js": "^3.6.5",
     "less-plugin-sass2less": "^1.2.0",
+    "nprogress": "^0.2.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.0-0"
