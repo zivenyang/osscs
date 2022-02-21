@@ -1,0 +1,34 @@
+version: "0.0.1"
+
+networks: # 自定义网络(默认桥接), 不使用links通信
+  nginx_network:
+    driver: bridge
+
+services:
+  osscs:
+    image: osscs:test2
+    environment:
+      # 本项目的接口来源于https://libraries.io/api
+      # 该变量为libraries.io的api_key，请自行注册并替换该值
+      # 注意：API KEY为**敏感信息**，请勿上传至远程代码仓，请妥善保管，以免泄露
+      LIBRARIES_IO_API_KEY: 'SET YOUR API KEY HERE'
+    expose:
+      - "8000"
+    networks:
+      - nginx_network
+    restart: always
+    tty: true
+    stdin_open: true
+
+  nginx:
+    image: osscs:test1
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - "80"
+    networks:
+      - nginx_network
+    depends_on:
+      - osscs
+    restart: always

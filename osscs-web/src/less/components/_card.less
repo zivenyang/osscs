@@ -199,12 +199,32 @@
 }
 
 // card-package-list style
-.card-package-list.ant-card {
+.card-package-list{
+	.ant-list-lg .ant-list-item{
+		padding: 16px 0px;
+	}
+	&.ant-card {
 
 		box-shadow: @shadow-1;
 		background-color: @color-gray-2;
 		border: 1px solid @color-gray-3;
-		
+
+		.ant-descriptions{
+			&-header {
+				margin-bottom: 0px;
+			}
+			&-title {
+				font-size: 18px;
+			}
+			&-item-content {
+				overflow-x: scroll;
+				&::-webkit-scrollbar{
+					display: none;
+				}
+				
+			}
+
+		}
 
 		.ant-card-body {
 			@media( min-width: @lg ){
@@ -223,7 +243,20 @@
 		.ant-btn {
 			color: @color-gray-7;
 	}
+
+	&-hoverable {
+        cursor: default;
+    }
+    &-hoverable:hover {
+		// background-color: @color-primary ;
+		border-color: rgba(0, 0, 0, 0.09);
+		box-shadow: @shadow-2;
+        
+	  }
+	  
 }
+}
+
 
 // card-package-info style
 .card-package-info {
@@ -268,15 +301,18 @@
 	
 			}
 			.ant-descriptions-view {
-				overflow-x: scroll;
 				margin-top: 15px;
-				&::-webkit-scrollbar{
-					display: none;
-				}
-	
+				
 				@media( min-width: @lg ){
 					margin-top: 0;
 				}
+			}
+			.ant-descriptions-item-content {
+				overflow-x: scroll;
+				&::-webkit-scrollbar{
+					display: none;
+				}
+				
 			}
 			
 		}
@@ -287,6 +323,9 @@
 
 }
 .card-package-table{
+	.ant-card-head{
+		padding: 0px;
+	}
 	margin: 0px 10px;
 	border-bottom: 0;
 	padding: 0 16px;

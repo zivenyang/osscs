@@ -1,6 +1,7 @@
-from django.urls import path, include
-from app.views import search
+from django.urls import path
+from app.views import PackageList, PackageDetail
 
 urlpatterns = [
-    path('search/', search, name='search')
+    path('search/', PackageList.as_view(), name='search'),
+    path('<str:platform>/<str:name>/', PackageDetail.as_view(), name='detail')
 ]

@@ -1,0 +1,33 @@
+# 前端npm编译构建阶段
+FROM node:16-alpine as node
+ARG NODE_APP_DIR="/usr/app/osscs-web"
+RUN mkdir -p $NODE_APP_DIR
+COPY . $NODE_APP_DIR
+WORKDIR $NODE_APP_DIR
+RUN npm install && npm run build
+
+# 静态资源打包至ngnix
+FROM nginx:stable
+
+LABEL maintainer="yangziwen1994@gmail.com"
+LABEL org.opencontainers.image.title="OSSCS"
+LABEL org.opencontainers.image.description="开源软件便利店(Open Source Software Convenience Stores), 用于快速挑选安全新鲜的开源软件。"
+LABEL org.opencontainers.image.url="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.documentation="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.source="https://github.com/zivenyang/osscs"
+LABEL org.opencontainers.image.authors="yangziwen1994@gmail.com"
+
+
+RUN mkdir /app
+COPY --from=node /usr/app/osscs-web/dist /app/dist
+
+RUN rm /etc/nginx/conf.d/default.conf 
+COPY ./deploy/nginx.conf /etc/nginx/conf.d/
+
+EXPOSE 80
+# 关闭守护模式
+CMD ["nginx", "-g", "daemon off;"]
+
+ARG SOURCE_COMMIT="main"
+LABEL org.opencontainers.image.revision=$SOURCE_COMMIT
+LABEL org.opencontainers.image.licenses="https://github.com/zivenyang/osscs/blob/${SOURCE_COMMIT}/LICENSE"

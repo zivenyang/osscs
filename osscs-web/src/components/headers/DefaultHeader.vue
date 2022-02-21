@@ -10,16 +10,16 @@
 
       <div class="header-search" v-show="!isHome">
         <a-input-search
-          v-model:value="this.query"
+          v-model:value="this.q"
           placeholder="请输入开源软件名称"
           class="header-search-bar"
           @search="onSearch"
           size="small"
         >
           <template #addonBefore>
-            <a-select v-model:value="this.ossType" style="width: 90px">
-              <a-select-option value="Maven">Maven</a-select-option>
-              <a-select-option value="PyPI">PyPI</a-select-option>
+            <a-select v-model:value="this.platforms" style="width: 90px">
+              <a-select-option value="pypi">PyPI</a-select-option>
+              <a-select-option value="maven">Maven</a-select-option>
             </a-select>
           </template>
         </a-input-search>
@@ -67,8 +67,8 @@ export default {
     return {
       // Fixed header/sidebar-footer ( Affix component ) top offset.
       top: 0,
-      query: "",
-      ossType: "Maven",
+      q: "",
+      platforms: "pypi",
     };
   },
   methods: {
@@ -79,12 +79,12 @@ export default {
       // scroller is anywhere but the top of the page.
     },
     onSearch() {
-      if (!this.query) {
+      if (!this.q) {
         return;
       }
       this.$router.push({
-        name: "Result",
-        query: { ossType: this.ossType, query: this.query },
+        name: "Search",
+        query: { platforms: this.platforms, q: this.q },
       });
     },
   },
