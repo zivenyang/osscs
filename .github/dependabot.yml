@@ -5,16 +5,17 @@ version: 2
 updates:
   # Enable version updates for npm
   - package-ecosystem: "npm"
-    # Look for `package.json` and `lock` files in the `root` directory
     directory: "/osscs-web"
     # Check the npm registry for updates every day (weekdays)
     schedule:
       interval: "daily"
+    versioning-strategy: lockfile-only
 
-  # Enable version updates for Docker
+    # enable version updates for pypi
   - package-ecosystem: "pip"
-    # Look for a `Dockerfile` in the `root` directory
+    # look for `requirements.in` in the `root` directory
     directory: "/osscs"
-    # Check for updates once a week
+    # check for updates every day (weekdays)
     schedule:
       interval: "daily"
+    versioning-strategy: lockfile-only
