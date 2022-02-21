@@ -2,7 +2,7 @@
 <p align="center">
 <img src="https://img.shields.io/github/last-commit/zivenyang/osscs" alt="Last commit">
   <img src="https://img.shields.io/github/downloads/zivenyang/osscs/total" alt="Downloads">
-  <a href="https://www.npmjs.com/package/vue"><img src="https://img.shields.io/github/license/zivenyang/osscs" alt="License"></a>
+  <a href="https://github.com/zivenyang/osscs/blob/main/LICENSE"><img src="https://img.shields.io/github/license/zivenyang/osscs" alt="License"></a>
 </p>
 
 >开源软件便利店（Open Source Software Convenience Stores），用于快速挑选安全新鲜的开源软件。
