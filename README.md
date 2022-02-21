@@ -15,7 +15,7 @@
 ## 私有化部署
 *本项目的在线版本将在后续上线，敬请期待*  
 ### 环境准备
-docker安装：https://docs.docker.com/engine/install/
+docker安装：https://docs.docker.com/engine/install/  
 docker-compose安装：https://docs.docker.com/compose/install/
 
 ### 步骤1. 注册libraries.io，获取API Key
