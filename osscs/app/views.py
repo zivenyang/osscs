@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from app.serializers import PackageListSerializer, PackageDetailSerializer
 from app.spiders import LibrariesProjectSearchAPI, LibrariesProjectAPI
+from utils.filters import is_valid_param
 
 
 class PackageList(GenericAPIView):
@@ -81,8 +82,8 @@ class PackageDetail(GenericAPIView):
     serializer_class = PackageDetailSerializer
 
     def get_queryset(self):
-        platform = self.kwargs.get('platform')
-        name = self.kwargs.get('name')
+        platform = ''.join(filter(str.isalpha, self.kwargs.get('platform')))
+        name = ''.join(filter(is_valid_param, self.kwargs.get('name')))
         return LibrariesProjectAPI(platform=platform, name=name).get_query_object()
 
     @extend_schema(
