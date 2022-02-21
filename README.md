@@ -23,7 +23,7 @@ docker-compose安装：https://docs.docker.com/compose/install/
 用户登录后在[账户](https://libraries.io/account)页面中复制API Key
 
 ### 步骤2. 创建docker-compose.yml，并修改API Key
-你可以将项目下的[docker-compose.yml](/docker-compose-local.yml)文件复制到本地，然后修改`LIBRARIES_IO_API_KEY`的值
+你可以将项目下的[docker-compose.yml](/docker-compose.yml)文件复制到本地，然后修改`LIBRARIES_IO_API_KEY`的值
 
 ### 步骤3. 使用docker-compose启动容器
 ```shell
