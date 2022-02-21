@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# 本地docker-compose文件
+docker-compose-local.yml
