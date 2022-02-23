@@ -3,7 +3,6 @@ from urllib import parse
 import requests
 
 from app.models import MetaObject, PackageListObject, PackageObject, PackageDetailObject
-from app.serializers import PackageListSerializer, MetaSerializer, PackageSerializer, PackageDetailSerializer
 from const.const import LIBRARIES_IO_PROJECT_SEARCH_API_URL, LIBRARIES_IO_API_URL
 from const.security import LIBRARIES_IO_API_KEY
 
@@ -51,12 +50,12 @@ class LibrariesProjectSearchAPI(LibrariesAPI):
     def get_response(self):
         try:
             resp = requests.get(self.api, params=self.params, verify=False)
-            return resp.json()
+            return resp
         except requests.exceptions.RequestException as e:
             raise e
 
     def get_query_object(self):
-        resp_json = self.get_response()
+        resp_json = self.get_response().json()
         meta = MetaObject()
         query_object = PackageListObject()
 
@@ -82,7 +81,7 @@ class LibrariesProjectAPI(LibrariesAPI):
         super().__init__(page=page, per_page=per_page)
         self.platform = platform
         self.name = name
-        self.api = parse.urljoin(LIBRARIES_IO_API_URL, platform+'/'+name)
+        self.api = parse.urljoin(LIBRARIES_IO_API_URL, platform + '/' + name)
         self.params = {
             "api_key": self.api_key
         }
@@ -90,12 +89,12 @@ class LibrariesProjectAPI(LibrariesAPI):
     def get_response(self):
         try:
             resp = requests.get(self.api, params=self.params, verify=False)
-            return resp.json()
+            return resp
         except requests.exceptions.RequestException as e:
             raise e
 
     def get_query_object(self):
-        resp_json = self.get_response()
+        resp_json = self.get_response().json()
         PackageDetailObject(resp_json)
         return PackageDetailObject(resp_json)
 

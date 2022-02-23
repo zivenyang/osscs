@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 
+# 解决import error 'force_text' from 'django.utils.encoding'
+import django
+from django.utils.encoding import force_str
+django.utils.encoding.force_text = force_str
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -38,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_spectacular',
     'drf_spectacular_sidecar',  # required for Django collectstatic discovery
+    'graphene_django',
     'app.apps.AppConfig',
 ]
 
@@ -115,6 +121,11 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': '开源软件便利店(Open Source Software Convenience Stores), 用于快速挑选安全新鲜的开源软件。',
     'VERSION': '0.0.1',
     # OTHER SETTINGS
+}
+
+# graphene_django配置
+GRAPHENE = {
+    "SCHEMA": "osscs.schema.schema"
 }
 
 # Internationalization
