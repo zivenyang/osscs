@@ -1,6 +1,9 @@
 Django==4.0.2
 djangorestframework==3.13.1
 drf_spectacular==0.21.2
+graphene==2.1.9
+graphene_django==2.15.0
+graphql==0.0.4
+graphql_core==2.3.2
 requests==2.27.1
 uwsgi==2.0.20
-drf-spectacular-sidecar==2022.2.7
