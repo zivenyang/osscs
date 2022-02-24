@@ -1,0 +1,105 @@
+<!--
+The request to this GraphQL server provided the header "Accept: text/html"
+and as a result has been presented GraphiQL - an in-browser IDE for
+exploring GraphQL.
+If you wish to receive JSON, provide the header "Accept: application/json" or
+add "&raw" to the end of the URL within a browser.
+-->
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GraphiQL</title>
+    <style>
+      html,
+      body,
+      #editor {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+      }
+    </style>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/graphiql-with-extensions@0.14.3/graphiqlWithExtensions.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <div id="editor"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.js" integrity="sha256-+pQdxwAcHJdQ3e/9S4RK6g8ZkwdMgFQuHvLuN5uyk5c=" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/react@{{react_version}}/umd/react.production.min.js"
+      integrity="{{react_sri}}"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/react-dom@{{react_version}}/umd/react-dom.production.min.js"
+      integrity="{{react_dom_sri}}"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/graphiql-with-extensions@0.14/graphiqlWithExtensions.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/subscriptions-transport-ws@0.9.19/browser/client.js" integrity="sha256-BKMbTbqUpeRuFBA9qYWYe8TGy2uBpCoxnJPX1n8Vxo4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/graphiql-subscriptions-fetcher@0.0.2/browser/client.js"></script>
+    <script>
+      function httpUrlToWebSockeUrl(url) {
+        return url.replace(/(http)(s)?\:\/\//, "ws$2://");
+      }
+
+      function graphQLFetcher(graphQLParams) {
+        let headers = {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        };
+
+        let csrfToken = Cookies.get("csrftoken");
+        if (csrfToken) {
+          headers["x-csrftoken"] = csrfToken;
+        }
+
+        return fetch(window.location.href, {
+          method: "post",
+          headers: headers,
+          body: JSON.stringify(graphQLParams),
+        })
+          .then((response) => {
+            return response.text();
+          })
+          .then((responseBody) => {
+            try {
+              return JSON.parse(responseBody);
+            } catch (error) {
+              return responseBody;
+            }
+          });
+      }
+
+      const subscriptionsClient =
+        "{{subscription_path}}" !== "None" && "{{subscription_path}}" !== ""
+          ? new window.SubscriptionsTransportWs.SubscriptionClient(
+              httpUrlToWebSockeUrl("{{subscription_path}}"),
+              {
+                reconnect: true,
+              }
+            )
+          : null;
+
+      const graphQLFetcherWithSubscriptions =
+        window.GraphiQLSubscriptionsFetcher.graphQLFetcher(
+          subscriptionsClient,
+          graphQLFetcher
+        );
+
+      ReactDOM.render(
+        React.createElement(GraphiQLWithExtensions.GraphiQLWithExtensions, {
+          fetcher: graphQLFetcherWithSubscriptions,
+          graphiqlHeaderEditorEnabled: true,
+        }),
+        document.getElementById("editor")
+      );
+    </script>
+  </body>
+</html>
