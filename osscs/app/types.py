@@ -11,6 +11,9 @@ class VersionType(ObjectType):
     original_license = graphene.String()
     researched_at = CustomDateTime()
     repository_sources = graphene.List(graphene.String)
+    # TODO: vulnerabilities和usages后续实现，现用默认值
+    vulnerabilities = graphene.String(default_value="2 vulnerabilities")
+    usages = graphene.Int(default_value=30)
 
     class Meta:
         description = "版本信息类型，用于存储包的所有版本信息"

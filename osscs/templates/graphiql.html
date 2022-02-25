@@ -96,7 +96,7 @@ add "&raw" to the end of the URL within a browser.
       ReactDOM.render(
         React.createElement(GraphiQLWithExtensions.GraphiQLWithExtensions, {
           fetcher: graphQLFetcherWithSubscriptions,
-          graphiqlHeaderEditorEnabled: true,
+          graphiqlHeaderEditorEnabled: "{{graphiql_header_editor_enabled}}" === "True",
         }),
         document.getElementById("editor")
       );
