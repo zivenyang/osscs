@@ -26,7 +26,15 @@
                 :column="{ xxl: 4, xl: 3, lg: 3, md: 2, sm: 2, xs: 1 }"
               >
                 <template #title>
-                  <router-link :to="{ name: 'Detail', params: { platform: this.platforms, packageName: item.name } }">
+                  <router-link
+                    :to="{
+                      name: 'Detail',
+                      params: {
+                        platform: this.platforms,
+                        packageName: item.name,
+                      },
+                    }"
+                  >
                     {{ item.name }}
                   </router-link>
                 </template>
@@ -52,16 +60,16 @@
                   </a-tag>
                 </a-descriptions-item>
                 <a-descriptions-item label="latest release version">
-                  {{ item.latest_release_number }}
+                  {{ item.latestReleaseNumber }}
                 </a-descriptions-item>
                 <a-descriptions-item label="latest stable version">
-                  {{ item.latest_stable_release_number }}
+                  {{ item.latestStableReleaseNumber }}
                 </a-descriptions-item>
                 <a-descriptions-item label="stars">
                   {{ item.stars }}
                 </a-descriptions-item>
                 <a-descriptions-item label="use by">
-                  {{ item.dependent_repos_count }}
+                  {{ item.dependentReposCount }}
                 </a-descriptions-item>
                 <a-descriptions-item label="status" v-if="item.status != null">
                   <a-tag :color="setStatusColor(item.status)">{{
@@ -83,8 +91,10 @@
           }"
         >
           <!-- <a-spin v-if="meta.has_next_page" /> -->
-          <a-button v-if="meta.has_next_page" @click="getPackageList">Loading more</a-button>
-          <p v-else >No more</p>
+          <a-button v-if="hasNextPage" @click="fetchMore"
+            >Loading more</a-button
+          >
+          <p v-else>No more</p>
         </div>
       </template>
     </a-list>
@@ -93,25 +103,15 @@
 </template>
 
 <script>
-// const dataList = [];
-// const pagination = {
-//   onChange: (page) => {
-//     console.log(page);
-//   },
-//   pageSize: 5,
-// };
-
-// for (let i = 0; i < 23; i++) {
-//   dataList.push({
-//     href: "/",
-//     title: `ant design vue part ${i}`,
-//     avatar: "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-//     description:
-//       "Ant Design, a design language for background applications, is refined by Ant UED Team.",
-//   });
-// }
 export default {
-  props: ["packageList", "platforms", "q", "meta", "getPackageList", "loading"],
+  props: [
+    "packageList",
+    "platforms",
+    "q",
+    "hasNextPage",
+    "fetchMore",
+    "loading",
+  ],
   computed: {
     setLicenseColor() {
       return function (License) {
@@ -133,11 +133,6 @@ export default {
         }
       };
     },
-  },
-  methods: {
-    // loadMore() {
-    //   console.log("loading more");
-    // },
   },
 };
 </script>
