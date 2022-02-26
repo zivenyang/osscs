@@ -10,7 +10,7 @@
 
 ## 前言
 本项目是一款开源软件选型应用，旨在让用户能够快速挑选长期维护、社区活跃、安全性高的开源软件。  
-本项目也是一个基于[Graphql](https://graphql.org/)的Python全栈项目，前端使用[Vue3.0](https://v3.cn.vuejs.org/)+[Antdv2.x](https://2x.antdv.com/docs/vue/introduce-cn/)+[Vue Apollo v4](https://v4.apollo.vuejs.org/zh-cn/)，后端使用[Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/)，同时使用Gihub Actions进行CICD。  
+本项目也是一个基于[Graphql](https://graphql.cn/)的Python全栈项目，前端使用[Vue3.0](https://v3.cn.vuejs.org/)+[Antdv2.x](https://2x.antdv.com/docs/vue/introduce-cn/)+[Vue Apollo v4](https://v4.apollo.vuejs.org/zh-cn/)，后端使用[Graphene-Django](https://docs.graphene-python.org/projects/django/en/latest/)，同时使用Gihub Actions进行CICD。  
 
 ## 私有化部署
 *本项目的在线版本将在后续上线，敬请期待*  
