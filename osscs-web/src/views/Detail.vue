@@ -29,7 +29,7 @@
 import CardPackageInfo from "@/components/cards/CardPackageInfo.vue";
 import CardPackageTable from "@/components/cards/CardPackageTable.vue";
 import gql from "graphql-tag";
-import { message } from 'ant-design-vue';
+import { message } from "ant-design-vue";
 
 // "Authors" table list of columns and their properties.
 const packageVersionTableColumns = [
@@ -86,59 +86,42 @@ export default {
       // Associating "Authors" table columns with its corresponding property.
       packageVersionTableColumns: packageVersionTableColumns,
 
-      platform: "",
-      packageName: "",
+      platform: this.$route.params.platform,
+      packageName: this.$route.params.packageName,
       packageDetail: {},
-      loading: true,
       packageData: {},
     };
   },
-  methods: {
-    // 页面数据初始化，从GET请求中获取参数
-    loadData() {
-      this.platform = this.$route.params.platform;
-      this.packageName = this.$route.params.packageName;
-      this.packageDetail = {};
-      this.packageVersionTableData = [];
-      this.getPackageDetail();
+  
+  apollo: {
+    packageData: {
+      query: QueryPackageDetailGql,
+      // 响应式参数
+      variables() {
+        // 在这里使用 vue 的响应式属性
+        return {
+          name: this.packageName,
+          platform: this.platform,
+        };
+      },
+      // 我们使用自定义的 update 回调函数，因为字段名称不匹配
+      // 默认情况下，将使用 'data' 结果对象上的 'pingMessage' 属性
+      // 考虑到 apollo 服务端的工作方式，我们知道结果是在 'ping' 属性中
+      update(data) {
+        // 返回的值将更新 vue 属性 'pingMessage'
+        return data;
+      },
+      // 可选结果钩子
+      result({ data }) {
+        this.packageDetail = data.package;
+        this.packageVersionTableData = data.package.versions;
+      },
+      // 错误处理
+      error(error) {
+        message.error(error.message);
+        console.error("We've got an error!", error);
+      },
     },
-    getPackageDetail() {
-      this.$apollo.addSmartQuery("packageData", {
-        query: QueryPackageDetailGql,
-        // 响应式参数
-        variables() {
-          // 在这里使用 vue 的响应式属性
-          return {
-            name: this.packageName,
-            platform: this.platform,
-          };
-        },
-        // 我们使用自定义的 update 回调函数，因为字段名称不匹配
-        // 默认情况下，将使用 'data' 结果对象上的 'pingMessage' 属性
-        // 考虑到 apollo 服务端的工作方式，我们知道结果是在 'ping' 属性中
-        update(data) {
-          // 返回的值将更新 vue 属性 'pingMessage'
-          return data;
-        },
-        // 可选结果钩子
-        result({ data }) {
-          this.packageDetail = data.package;
-          this.packageVersionTableData = data.package.versions;
-        },
-        // 错误处理
-        error(error) {
-          message.error(error.message);
-          console.error("We've got an error!", error);
-        },
-      });
-    },
-  },
-
-  updated() {
-    this.loadData();
-  },
-  created() {
-    this.loadData();
   },
 };
 </script>
