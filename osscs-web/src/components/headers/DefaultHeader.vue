@@ -26,18 +26,18 @@
       </div>
 
       <div class="header-col header-btn">
+        <router-link :to="{name: 'Login'}">
         <a-button
-          href="https://github.com/zivenyang/osscs"
-          target="_blank"
           type="primary"
           shape="circle"
           rel="noopener noreferrer"
           style="text-align: center"
         >
           <template #icon
-            ><GithubOutlined :style="{ fontSize: '20px' }"
+            ><UserOutlined :style="{ fontSize: '20px' }"
           /></template>
         </a-button>
+        </router-link>
       </div>
     </a-layout-header>
     <!-- / Layout Header ( Navbar ) -->
@@ -45,10 +45,10 @@
 </template>
 
 <script>
-import { GithubOutlined } from "@ant-design/icons-vue";
+import { UserOutlined } from "@ant-design/icons-vue";
 export default {
   components: {
-    GithubOutlined,
+    UserOutlined,
   },
 
   props: {

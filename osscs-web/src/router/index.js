@@ -12,6 +12,33 @@ const routes = [
     },
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
+    meta: {
+      isHome: true,
+      navbarFixed: false
+    },
+  },
+  {
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('../views/Signup.vue'),
+    meta: {
+      isHome: true,
+      navbarFixed: false
+    },
+  },
+  {
+    path: '/profile/:username',
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: {
+      isHome: true,
+      navbarFixed: false
+    },
+  },
+  {
     path: '/search',
     name: 'Search',
     component: () => import('../views/Search.vue'),
