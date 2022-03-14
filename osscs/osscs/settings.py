@@ -53,7 +53,9 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'drf_spectacular_sidecar',  # required for Django collectstatic discovery
     'graphene_django',
+    "graphql_jwt.refresh_token.apps.RefreshTokenConfig",
     'app.apps.AppConfig',
+    'accounts.apps.AccountsConfig'
 ]
 
 MIDDLEWARE = [
@@ -93,8 +95,12 @@ WSGI_APPLICATION = 'osscs.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'osscs',
+        'USER': 'root',
+        'PASSWORD': '941105',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
@@ -135,8 +141,16 @@ SPECTACULAR_SETTINGS = {
 
 # graphene_django配置
 GRAPHENE = {
-    "SCHEMA": "osscs.schema.schema"
+    "SCHEMA": "osscs.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
+
+AUTHENTICATION_BACKENDS = [
+    "graphql_jwt.backends.JSONWebTokenBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -160,3 +174,17 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 指定自定义的用户模型
+AUTH_USER_MODEL = 'accounts.User'
+
+# redis配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
