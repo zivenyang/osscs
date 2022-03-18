@@ -24,25 +24,27 @@
 
         <!-- Sign In Form -->
         <a-form
+          name="loginForm"
+          ref="loginFormRef"
           id="components-form-demo-normal-login"
-          :model="formState"
+          :model="loginForm"
           :rules="rules"
           class="login-form"
-          @submit="handleSubmit"
           :hideRequiredMark="true"
         >
-          <a-form-item class="mb-10" label="邮箱" :colon="false">
-            <a-input v-model:value="formState.email" placeholder="请输入邮箱" />
+          <a-form-item class="mb-10" label="用户名" :colon="false" name="username">
+            <a-input v-model:value="loginForm.username" placeholder="请输入用户名" />
           </a-form-item>
-          <a-form-item class="mb-5" label="密码" :colon="false">
-            <a-input
-              v-model:value="formState.password"
+          <a-form-item class="mb-5" label="密码" :colon="false" name="password">
+            <a-input-password
+              v-model:value="loginForm.password"
               type="password"
               placeholder="请输入密码"
             />
           </a-form-item>
-          <a-form-item class="mb-10">
-            <a-switch v-model:checked="formState.rememberMe" /> 记住我
+          <a-form-item class="mb-10" name="rememberMe">
+            <!-- TODO: 实现rememberMe -->
+            <a-switch v-model:checked="loginForm.rememberMe" /> 记住我
           </a-form-item>
           <a-form-item>
             <a-button
@@ -50,6 +52,7 @@
               block
               html-type="submit"
               class="login-form-button"
+              @click.prevent="onSubmit"
             >
               登录
             </a-button>
@@ -77,37 +80,64 @@
 </template>
 
 <script>
-const formState = {
-  email: "",
-  password: "",
-  rememberMe: true,
-};
-const rules = {
-  email: [{ required: true, message: "Please input your email!" }],
-  password: [{ required: true, message: "Please input your password!" }],
-};
+import LOGIN from "../graphql/accounts/mutations/Login.graphql";
+
 export default {
   data() {
     return {
       // Binded model property for "Sign In Form" switch button for "Remember Me" .
-      formState,
-      rules,
+      loginForm: {
+        username: "",
+        password: "",
+        rememberMe: true,
+      },
+      rules: {
+        username: [{ required: true, message: "Please input your username!" }],
+        password: [{ required: true, message: "Please input your password!" }],
+      },
     };
   },
   methods: {
     // Handles input validation after submission.
-    handleSubmit() {
-      //   e.preventDefault();
-      //   this.form.validateFields((err, values) => {
-      //     if (!err) {
-      //       console.log("Received values of form: ", values);
-      //     }
-      //   });
-      this.$router.push({
-        name: "Profile",
-        params: { username: this.formState.email },
-      });
-      console.log("Received values of form: ", this.formState);
+    handleLogin() {
+      // 保存用户输入以防止错误
+      const loginForm = this.loginForm;
+      // 将其清除以尽早更新用户页面
+      this.loginForm = {};
+      // 调用 graphql 变更
+      this.$apollo
+        .mutate({
+          // 查询语句
+          mutation: LOGIN,
+          // 参数
+          variables: {
+            ...loginForm,
+          },
+        })
+        .then(({ data }) => {
+          // 结果
+          console.log("Register data:", data);
+          localStorage.setItem("apollo-token", data.tokenAuth.token);
+          this.$router.push({
+            name: "Profile",
+          });
+        })
+        .catch((error) => {
+          this.loginForm = loginForm;
+          throw error;
+        });
+    },
+    // Handles input validation after submission.
+    onSubmit() {
+      // 验证整个表单项
+      this.$refs.loginFormRef
+        .validate()
+        .then(() => {
+          this.handleLogin();
+        })
+        .catch((error) => {
+          console.error("请正确输入表单项", error);
+        });
     },
   },
 };

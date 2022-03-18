@@ -30,7 +30,7 @@ const routes = [
     },
   },
   {
-    path: '/profile/:username',
+    path: '/profile/me',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),
     meta: {

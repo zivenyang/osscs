@@ -7,7 +7,7 @@ import 'ant-design-vue/dist/antd.less';
 import DefaultLayout from './layouts/Default.vue'
 import './less/app.less'
 import './utils/nprogress'
-import apolloProvider from './utils/apollo'
+import apolloProvider from './apollo'
 
 
 const app = createApp(App);

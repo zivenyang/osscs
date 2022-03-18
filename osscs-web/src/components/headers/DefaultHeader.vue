@@ -26,18 +26,37 @@
       </div>
 
       <div class="header-col header-btn">
-        <router-link :to="{name: 'Login'}">
-        <a-button
-          type="primary"
-          shape="circle"
-          rel="noopener noreferrer"
-          style="text-align: center"
-        >
-          <template #icon
-            ><UserOutlined :style="{ fontSize: '20px' }"
-          /></template>
-        </a-button>
-        </router-link>
+        <a-dropdown>
+          <template #overlay>
+            <a-menu v-if="isAuthenticated != true">
+              <a-menu-item key="1">
+                <router-link :to="{ name: 'Login' }">登录</router-link>
+              </a-menu-item>
+              <a-menu-item key="2">
+                <router-link :to="{ name: 'Signup' }">注册</router-link>
+              </a-menu-item>
+            </a-menu>
+            <a-menu v-else>
+              <a-menu-item key="1">
+                <router-link :to="{ name: 'Profile' }">详情</router-link>
+              </a-menu-item>
+              <a-menu-item key="2"> 设置 </a-menu-item>
+              <a-menu-item key="3" @click.prevent="onLogout">
+                登出
+              </a-menu-item>
+            </a-menu>
+          </template>
+          <a-button
+            type="primary"
+            shape="circle"
+            rel="noopener noreferrer"
+            style="text-align: center"
+          >
+            <template #icon
+              ><UserOutlined :style="{ fontSize: '20px' }"
+            /></template>
+          </a-button>
+        </a-dropdown>
       </div>
     </a-layout-header>
     <!-- / Layout Header ( Navbar ) -->
@@ -69,7 +88,21 @@ export default {
       top: 0,
       q: "",
       platforms: "pypi",
+      token: localStorage.getItem("apollo-token"),
     };
+  },
+  computed: {
+    isAuthenticated() {
+      if (
+        this.token === null ||
+        this.token === undefined ||
+        this.token === ""
+      ) {
+        return false;
+      } else {
+        return true;
+      }
+    },
   },
   methods: {
     resizeEventHandler() {
@@ -87,6 +120,12 @@ export default {
         query: { platforms: this.platforms, q: this.q },
       });
     },
+    onLogout() {
+      localStorage.removeItem("apollo-token");
+      this.$router.push({
+        name: "Login",
+      });
+    },
   },
   created() {
     // Registering window resize event listener to fix affix elements size
@@ -96,6 +135,16 @@ export default {
   unmounted() {
     // Removing window resize event listener.
     window.removeEventListener("resize", this.resizeEventHandler);
+  },
+  watch: {
+    // 监听路由变化
+    $route: {
+      immediate: true, // 监听到路由的变化立即执行
+      handler() {
+        // 这里是监听路由后要做的事情
+        this.token = localStorage.getItem("apollo-token");
+      },
+    },
   },
 };
 </script>
