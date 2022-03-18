@@ -30,7 +30,7 @@ class RegisterForm(forms.Form):
         username = self.cleaned_data['username']
         pattern = r'^[a-z0-9_-]{6,16}$'
         if not re.search(pattern, username):
-            raise forms.ValidationError('用户名%s输入不正确,只能包含小写字母、数字、中划线和下划线，长度为6-16个字符',
+            raise forms.ValidationError('用户名%s输入不正确，只能包含小写字母、数字、中划线和下划线，长度为6-16个字符',
                                         code='invalid_username',
                                         params=(username,))
         if User.objects.filter(username=username).exists():
@@ -61,13 +61,13 @@ class RegisterForm(forms.Form):
         email = self.cleaned_data.get('email', None)
         sms_code = self.cleaned_data.get('sms_code', None)
         # redis 中的验证码key
-        key = '{}{}'.format(const.REGISTER_MSM_CODE_KEY, email)
-        code = cache.get(key)
-        # code 已失效
-        if code is None:
-            raise forms.ValidationError('验证码已经失效')
-        if code != sms_code:
-            raise forms.ValidationError('验证码输入不正确')
+        # key = '{}{}'.format(const.REGISTER_MSM_CODE_KEY, email)
+        # code = cache.get(key)
+        # # code 已失效
+        # if code is None:
+        #     raise forms.ValidationError('验证码已经失效')
+        # if code != sms_code:
+        #     raise forms.ValidationError('验证码输入不正确')
         return data
 
 

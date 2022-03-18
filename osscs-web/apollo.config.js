@@ -2,7 +2,7 @@
 module.exports = {
     client: {
       service: {
-        name: 'osscs',
+        name: 'sandbox',
         // GraphQL API 的 URL
         url: 'http://127.0.0.1:8000/graphql/',
       },
