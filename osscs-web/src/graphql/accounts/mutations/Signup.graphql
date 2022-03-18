@@ -1,0 +1,24 @@
+mutation signUp(
+  $username: String!
+  $password: String!
+  $checkPassword: String!
+  $email: String!
+  $smsCode: Int!
+) {
+  register(
+    input: {
+      username: $username
+      password: $password
+      checkPassword: $checkPassword
+      email: $email
+      smsCode: $smsCode
+    }
+  ) {
+    token
+    refreshToken
+    errors {
+      field
+      messages
+    }
+  }
+}

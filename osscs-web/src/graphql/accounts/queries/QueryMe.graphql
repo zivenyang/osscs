@@ -1,0 +1,11 @@
+query queryMe {
+  me {
+    email
+    isEmailValid
+    username
+    profile {
+      avatar
+      nickname
+    }
+  }
+}
